@@ -7,6 +7,7 @@ const ComprehensiveAdminPanel = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [data, setData] = useState({});
+  const [roomTypes, setRoomTypes] = useState([]);
   const [pagination, setPagination] = useState({
     page: 1,
     limit: 20,
@@ -16,6 +17,21 @@ const ComprehensiveAdminPanel = () => {
   const [editMode, setEditMode] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
   const [showForm, setShowForm] = useState(false);
+
+  // Load room types for dropdown
+  useEffect(() => {
+    const loadRoomTypes = async () => {
+      try {
+        const result = await hotelAPI.getRoomTypes();
+        if (result.success) {
+          setRoomTypes(result.data || []);
+        }
+      } catch (error) {
+        console.error('Error loading room types:', error);
+      }
+    };
+    loadRoomTypes();
+  }, []);
 
   // Admin modules configuration
   const adminModules = [
@@ -58,7 +74,7 @@ const ComprehensiveAdminPanel = () => {
         { name: 'roomDescription', label: 'Description', type: 'text' },
         { name: 'status', label: 'Status', type: 'select', options: ['VR', 'VC', 'OC', 'OO'], required: true },
         { name: 'rate', label: 'Rate', type: 'number', required: true },
-        { name: 'roomTypeId', label: 'Room Type ID', type: 'number', required: true }
+        { name: 'roomTypeId', label: 'Room Type', type: 'roomTypeSelect', required: true }
       ],
       allowedFields: ['roomNo', 'floor', 'noOfPersons', 'roomDescription', 'status', 'rate', 'roomTypeId'],
       idField: 'id'
@@ -297,6 +313,26 @@ const ComprehensiveAdminPanel = () => {
   // Get current module configuration
   const getCurrentModule = () => {
     return adminModules.find(module => module.id === activeModule);
+  };
+
+  // Helper function to get room type name by ID
+  const getRoomTypeName = (roomTypeId) => {
+    const roomType = roomTypes.find(rt => rt.roomTypeId === parseInt(roomTypeId));
+    return roomType ? roomType.roomTypeName : `ID: ${roomTypeId}`;
+  };
+
+  // Helper function to format field values for display
+  const formatFieldValue = (field, value, item) => {
+    if (field.type === 'checkbox') {
+      return value ? '✅' : '❌';
+    }
+    if (field.name === 'roomTypeId' && activeModule === 'rooms') {
+      return getRoomTypeName(value);
+    }
+    if (field.name === 'userRole' || field.name === 'role') {
+      return value || '-';
+    }
+    return value || '-';
   };
 
   // Load data for current module
@@ -541,10 +577,7 @@ const ComprehensiveAdminPanel = () => {
                             <tr key={uniqueId}>
                               {currentModule.fields.slice(0, 4).map((field, fieldIndex) => (
                                 <td key={`${uniqueId}-${field.name}-${fieldIndex}`}>
-                                  {field.type === 'checkbox' 
-                                    ? (item[field.name] ? '✅' : '❌')
-                                    : (item[field.name] || '-')
-                                  }
+                                  {formatFieldValue(field, item[field.name], item)}
                                 </td>
                               ))}
                               <td className="actions">
@@ -637,6 +670,21 @@ const ComprehensiveAdminPanel = () => {
                       <option value="">Select {field.label}</option>
                       {field.options?.map(option => (
                         <option key={option} value={option}>{option}</option>
+                      ))}
+                    </select>
+                  ) : field.type === 'roomTypeSelect' ? (
+                    <select
+                      id={field.name}
+                      name={field.name}
+                      value={formData[field.name] || ''}
+                      onChange={(e) => setFormData(prev => ({ ...prev, [field.name]: e.target.value }))}
+                      required={field.required}
+                    >
+                      <option value="">Select Room Type</option>
+                      {roomTypes.map(roomType => (
+                        <option key={roomType.roomTypeId} value={roomType.roomTypeId}>
+                          {roomType.roomTypeName} (ID: {roomType.roomTypeId})
+                        </option>
                       ))}
                     </select>
                   ) : field.type === 'textarea' ? (

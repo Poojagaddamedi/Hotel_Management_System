@@ -126,6 +126,7 @@ class HotelAPI {
   async updateUser(id, data) { return this.request(`/api/users/${id}`, { method: 'PUT', body: JSON.stringify(data) }); }
   async deleteUser(id) { return this.request(`/api/users/${id}`, { method: 'DELETE' }); }
   async resetPassword(userId) { return this.request(`/api/users/${userId}/reset-password`, { method: 'POST' }); }
+  async getUserByUsername(username) { return this.request(`/api/users/username/${username}`); }
 
   // === HOUSEKEEPING CONTROLLER APIs ===
   async getHousekeepingRooms() { return this.request('/api/housekeeping/rooms'); }
@@ -444,7 +445,8 @@ export const UserAPI = {
   getUserById: hotelAPI.getUserById.bind(hotelAPI),
   updateUser: hotelAPI.updateUser.bind(hotelAPI),
   deleteUser: hotelAPI.deleteUser.bind(hotelAPI),
-  resetPassword: hotelAPI.resetPassword.bind(hotelAPI)
+  resetPassword: hotelAPI.resetPassword.bind(hotelAPI),
+  getUserByUsername: hotelAPI.getUserByUsername.bind(hotelAPI)
 };
 
 export const AuthAPI = {

@@ -1,17 +1,83 @@
 import React, { useState } from "react";
 import logo from "../assets/logo.png";        // Update with your actual logo path
 import hotelBg from "../assets/hotel-bg.png"; // Update with actual hotel image path
+import hotelAPI from "../services/hotelAPI";
 
 export default function LoginForm({ onLogin }) {
   const [userId, setUserId] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("manager"); // default to manager or your preferred role
+  const [loading, setLoading] = useState(false);
 
-
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
     if (userId && password) {
-      onLogin(role);
+      setLoading(true);
+      try {
+        // First try to authenticate and get user role from backend
+        const loginResult = await hotelAPI.login({ username: userId, password });
+        
+        if (loginResult.success && loginResult.data) {
+          // Get the user role from login response
+          const userRole = loginResult.data.role || loginResult.data.userType || "staff";
+          const normalizedRole = userRole.toLowerCase();
+          
+          // Store user info in localStorage for session management
+          localStorage.setItem('user', JSON.stringify({
+            userId: userId,
+            username: userId,
+            role: userRole,
+            userType: loginResult.data.userType || userRole
+          }));
+          
+          onLogin(normalizedRole);
+        } else {
+          // Fallback: Try to get user by username to determine role
+          const userResult = await hotelAPI.getUserByUsername(userId);
+          if (userResult.success && userResult.data) {
+            const userRole = userResult.data.userRole || userResult.data.userType || "staff";
+            const normalizedRole = userRole.toLowerCase();
+            
+            localStorage.setItem('user', JSON.stringify({
+              userId: userId,
+              username: userId,
+              role: userRole,
+              userType: userResult.data.userType || userRole
+            }));
+            
+            onLogin(normalizedRole);
+          } else {
+            // Last fallback - basic role detection from username
+            let detectedRole = "staff";
+            const usernameLower = userId.toLowerCase();
+            
+            if (usernameLower.includes('admin')) {
+              detectedRole = "admin";
+            } else if (usernameLower.includes('manager')) {
+              detectedRole = "manager";
+            } else if (usernameLower.includes('reception') || usernameLower.includes('recept')) {
+              detectedRole = "receptionist";
+            } else if (usernameLower.includes('account')) {
+              detectedRole = "accountant";
+            } else if (usernameLower.includes('housekeep')) {
+              detectedRole = "housekeeping";
+            }
+            
+            localStorage.setItem('user', JSON.stringify({
+              userId: userId,
+              username: userId,
+              role: detectedRole.toUpperCase(),
+              userType: detectedRole.charAt(0).toUpperCase() + detectedRole.slice(1)
+            }));
+            
+            onLogin(detectedRole);
+          }
+        }
+      } catch (error) {
+        console.error('Login error:', error);
+        alert("Login failed. Please check your credentials.");
+      } finally {
+        setLoading(false);
+      }
     } else {
       alert("Please enter your User ID and Password");
     }
@@ -115,38 +181,12 @@ export default function LoginForm({ onLogin }) {
               required
             />
           </div>
-          <div style={{ alignSelf: "stretch", marginBottom: 20 }}>
-            <label
-              style={{ display: "block", fontSize: 13, marginBottom: 4, fontWeight: 500 }}
-            >
-              Role
-            </label>
-              <select
-              value={role}
-              onChange={e => setRole(e.target.value)}
-              style={{
-                width: "100%",
-                padding: "10px",
-                fontSize: 14,
-                borderRadius: 9,
-                border: "1px solid #e2e2eb",
-                outline: "none",
-                background: "#fafafa",
-                cursor: "pointer"
-              }}
-            >
-              <option value="manager">Manager</option>
-              <option value="accountant">Accountant</option>
-              <option value="receptionist">Receptionist</option>
-              <option value="admin">Admin</option>
-              <option value="housekeeping">Housekeeping Staff</option>
-            </select>
-          </div>
           <button
             type="submit"
+            disabled={loading}
             style={{
               width: "100%",
-              background: "#635bd2",
+              background: loading ? "#ccc" : "#635bd2",
               color: "#fff",
               border: "none",
               borderRadius: 9,
@@ -154,11 +194,11 @@ export default function LoginForm({ onLogin }) {
               fontWeight: 700,
               fontSize: 16,
               marginTop: 2,
-              cursor: "pointer",
+              cursor: loading ? "not-allowed" : "pointer",
               boxShadow: "0 1px 6px rgba(99,91,210,0.07)"
             }}
           >
-            Login
+            {loading ? "Logging in..." : "Login"}
           </button>
         </form>
       </div>

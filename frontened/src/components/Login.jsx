@@ -9,7 +9,6 @@ export default function Login() {
   const { login } = useAuth();
   const [userId, setUserId] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("manager"); // default to manager
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -23,7 +22,8 @@ export default function Login() {
         const result = login(userId, password);
         
         if (result.success) {
-          // Redirect to dashboard after successful login
+          // Role is automatically determined by the login function based on username/password
+          // No need for manual role selection - it comes from user database
           navigate('/dashboard');
         } else {
           setError(result.error);
@@ -158,35 +158,6 @@ export default function Login() {
               disabled={loading}
             />
           </div>
-          <div style={{ alignSelf: "stretch", marginBottom: 20 }}>
-            <label
-              style={{ display: "block", fontSize: 13, marginBottom: 4, fontWeight: 500 }}
-            >
-              Role
-            </label>
-            <select
-              value={role}
-              onChange={e => setRole(e.target.value)}
-              style={{
-                width: "100%",
-                padding: "10px",
-                fontSize: 14,
-                borderRadius: 9,
-                border: "1px solid #e2e2eb",
-                outline: "none",
-                background: "#fafafa",
-                cursor: "pointer",
-                boxSizing: "border-box"
-              }}
-              disabled={loading}
-            >
-              <option value="manager">Manager</option>
-              <option value="accountant">Accountant</option>
-              <option value="receptionist">Receptionist</option>
-              <option value="admin">Admin</option>
-              <option value="housekeeping">Housekeeping Staff</option>
-            </select>
-          </div>
 
           {/* Demo credentials */}
           <div style={{
@@ -199,7 +170,7 @@ export default function Login() {
             borderRadius: "6px",
             border: "1px solid #e9ecef"
           }}>
-            <strong>Demo Credentials:</strong><br/>
+            <strong>User Accounts (Role auto-assigned):</strong><br/>
             Admin: admin/admin<br/>
             Manager: manager/manager<br/>
             Receptionist: receptionist/receptionist<br/>
