@@ -1,0 +1,79 @@
+HELP.md
+target/
+.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### VS Code ###
+.vscode/
+
+# Python files
+*.py
+*.pyc
+*.pyo
+__pycache__/
+
+# PowerShell files
+*.ps1
+
+# Batch files
+*.bat
+
+# JSON test/config files (but allow package.json and database files)
+*test_results*.json
+*api_test*.json
+!package.json
+!package-lock.json
+
+# Markdown files
+*.md
+
+# Log files
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+
+# HTML test files
+test*.html
+
+# Shell scripts
+*.sh
+
+# CSV files
+*.csv
+
+# Postman collections
+*.postman_collection.json
+
+# Node modules
+node_modules/
+
+# Keep database files - REMOVE SQL exclusions
+# proj_sql.sql and other database files are now allowed

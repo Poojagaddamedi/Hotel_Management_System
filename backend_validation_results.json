@@ -1,0 +1,58 @@
+{
+  "timestamp": "2025-08-31T17:49:38.006424",
+  "total_tests": 25,
+  "passed_tests": 7,
+  "failed_tests": 18,
+  "modules": {
+    "Nationalities": {
+      "get_all": "SUCCESS",
+      "create": "FAILED"
+    },
+    "Companies": {
+      "get_all": "SUCCESS",
+      "create": "FAILED"
+    },
+    "Room Types": {
+      "get_all": "SUCCESS",
+      "create": "FAILED"
+    },
+    "Rooms": {
+      "get_all": "SUCCESS",
+      "create": "FAILED"
+    },
+    "Taxes": {
+      "get_all": "SUCCESS",
+      "create": "FAILED"
+    },
+    "Shifts": {
+      "get_all": "SUCCESS",
+      "create": "FAILED"
+    },
+    "Payment Modes": {
+      "get_all": "FAILED",
+      "create": "FAILED"
+    },
+    "Plan Types": {
+      "get_all": "FAILED",
+      "create": "FAILED"
+    },
+    "Reference Modes": {
+      "get_all": "FAILED",
+      "create": "FAILED"
+    },
+    "Arrival Modes": {
+      "get_all": "FAILED",
+      "create": "FAILED"
+    },
+    "Reservation Sources": {
+      "get_all": "FAILED",
+      "create": "FAILED"
+    },
+    "Reservations": {
+      "get_all": "SUCCESS"
+    },
+    "Users": {
+      "get_all": "FAILED"
+    }
+  }
+}
